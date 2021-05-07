@@ -75,6 +75,8 @@ class BreatheCodeClient {
                 const qs = query !== undefined ? Object.keys(query).map(key => `${key}=${query[key]}`).join('&') : ''; 
                 return axios._get("Academy student",`${this.host}/auth/academy/student${query ? '?'+ qs : ''}`)
             },
+            getAcademyStudentsTest: () => axios._get("Academy test",`${this.host}/auth/academy/student`),
+            
             resendInvite:(user) => {
                 return axios._put("Invite", `${this.host}/auth/member/invite/resend/${user}`)
             }

@@ -3,7 +3,6 @@ import { useQuery } from '../../hooks/useQuery';
 import { useHistory } from 'react-router-dom';
 import { Breadcrumb } from "matx";
 import { DownloadCsv } from "../../components/DownloadCsv";
-import axios from "../../../axios";
 import MUIDataTable from "mui-datatables";
 import {
   Avatar,
@@ -18,8 +17,9 @@ import { Link, useParams } from "react-router-dom";
 import dayjs from "dayjs";
 import { MatxLoading } from "matx";
 
-import BC from "../../services/breathecode";
+import bc from "../../services/breathecode";
 import ResponseDialog from "./ResponseDialog";
+import { SmartMUIDataTable } from "app/components/SmartDataTable";
 var relativeTime = require("dayjs/plugin/relativeTime");
 dayjs.extend(relativeTime);
 
@@ -34,8 +34,6 @@ const Certificates = () => {
     const [isAlive, setIsAlive] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const [items, setItems] = useState([]);
-    let { cohortId } = useParams();
-
     const [table, setTable] = useState({
         count: 100,
         page: 0
@@ -51,14 +49,15 @@ const Certificates = () => {
     useEffect(() => {
         setIsLoading(true);
         bc.certificates().getAllCertificates({
-          limit: queryLimit,
-          offset: queryOffset,
+          limit: 10,
+          offset: 0,
+          like: ""
         })
           .then(({ data }) => {
             console.log(data.results);
             setIsLoading(false);
             if (isAlive) {
-                setItems(data.results)
+              setItems(data.results)
               setTable({ count: data.count });
             };
           }).catch(error => {
@@ -67,30 +66,6 @@ const Certificates = () => {
         return () => setIsAlive(false);
       }, [isAlive]);
 
-
-    const handlePageChange = (page, rowsPerPage, _like) => {
-        setIsLoading(true);
-        setQueryLimit(rowsPerPage);
-        setQueryOffset(rowsPerPage * page);
-        setQueryLike(_like);
-        let query = {
-          limit: rowsPerPage,
-          offset: page * rowsPerPage,
-          like: _like
-        }
-        bc.certificates().getAllCertificates(query)
-          .then(({ data }) => {
-              
-            setItems(data.results);
-            setIsLoading(false);
-            setTable({ count: data.count, page: page });
-            history.replace(`/certificates?${Object.keys(query).map(key => key + "=" + query[key]).join("&")}`)
-          }).catch(error => {
-            setIsLoading(false);
-          })
-      }
-
-   
   const columns = [
     {
       name: "specialty",
@@ -292,73 +267,12 @@ const Certificates = () => {
       <div className='overflow-auto'>
         <div className='min-w-750'>
           {isLoading && <MatxLoading />}
-          <MUIDataTable
-            title={"All Certificates"}
+          <SmartMUIDataTable 
+            title="All Certificates"
             data={items}
             columns={columns}
-            options={{
-              customToolbar: () => {
-                return <DownloadCsv />;
-              },
-              filterType: "textField",
-              responsive: "standard",
-              // selectableRows: "none", // set checkbox for each row
-              // search: false, // set search option
-              // filter: false, // set data filter option
-              download: false, // set download option
-              // print: false, // set print option
-              // pagination: true, //set pagination option
-              viewColumns: true, // set column option
-              elevation: 0,
-              rowsPerPageOptions: [10, 20, 40, 80, 100],
-              onTableChange: (action, tableState) => {
-                console.log(action, tableState)
-                switch (action) {
-                  case "changePage":
-                    handlePageChange(tableState.page, tableState.rowsPerPage, queryLike);
-                    break;
-                  case "changeRowsPerPage":
-                    handlePageChange(tableState.page, tableState.rowsPerPage, queryLike);
-                    break;
-                }
-              },
-            customSearchRender: (
-                searchText,
-                handleSearch,
-                hideSearch,
-                options
-            ) => {
-                return (
-                    <Grow appear in={true} timeout={300}>
-                        <TextField
-                            variant="outlined"
-                            size="small"
-                            fullWidth
-                            onKeyPress={(e) => {
-                                if(e.key == "Enter"){
-                                  handlePageChange(queryOffset, queryLimit, e.target.value)
-                                }
-                              }}
-                      InputProps={{
-                        style: {
-                          paddingRight: 0,
-                        },
-                        startAdornment: (
-                          <Icon className='mr-2' fontSize='small'>
-                            search
-                          </Icon>
-                        ),
-                        endAdornment: (
-                          <IconButton onClick={hideSearch}>
-                            <Icon fontSize='small'>clear</Icon>
-                          </IconButton>
-                        ),
-                      }}
-                    />
-                  </Grow>
-                );
-              },
-            }}
+            url="/certificate"
+            historyReplace="/certificates"
           />
         </div>
       </div>
