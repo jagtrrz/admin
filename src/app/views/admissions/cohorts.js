@@ -1,171 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Breadcrumb } from "matx";
-import { Grow, Icon, IconButton, Button } from "@material-ui/core";
+import { Button } from "@material-ui/core";
 import { Link } from "react-router-dom";
-import dayjs from "dayjs";
 import { MatxLoading } from "matx";
-import bc from "app/services/breathecode";
-import { useQuery } from "../../hooks/useQuery";
 
 import { SmartMUIDataTable } from "app/components/SmartDataTable";
 
-var relativeTime = require("dayjs/plugin/relativeTime");
-dayjs.extend(relativeTime);
-
-const stageColors = {
-  INACTIVE: "bg-gray",
-  PREWORK: "bg-secondary",
-  STARTED: "text-white bg-warning",
-  FINAL_PROJECT: "text-white bg-error",
-  ENDED: "text-white bg-green",
-  DELETED: "light-gray",
-};
-
 const Cohorts = () => {
-  const [isAlive, setIsAlive] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [items, setItems] = useState([]);
-  const [table, setTable] = useState({
-    count: 100,
-    page: 0
-  });
-  const query = useQuery();
-
-  useEffect(() => {
-    setIsLoading(true);
-    bc.admissions()
-      .getAllCohorts({
-        limit: 10,
-        offset: 0,
-        like: "",
-      })
-      .then(({ data }) => {
-        setIsLoading(false);
-        if (isAlive) {
-          setItems(data.results);
-          setTable({ count: data.count });
-        }
-      })
-      .catch((error) => {
-        setIsLoading(false);
-      });
-    return () => setIsAlive(false);
-  }, [isAlive]);
-
-  const columns = [
-    {
-      name: "id", // field name in the row object
-      label: "ID", // column title that will be shown in table
-      options: {
-        filter: true,
-      },
-    },
-    {
-      name: "stage", // field name in the row object
-      label: "Stage", // column title that will be shown in table
-      options: {
-        filter: true,
-        filterList: query.get("stage") !== null ? [query.get("stage")] : [],
-        customBodyRenderLite: (dataIndex) => {
-          let item = items[dataIndex];
-          return (
-            <div className='flex items-center'>
-              <div className='ml-3'>
-                <small
-                  className={
-                    "border-radius-4 px-2 pt-2px " + stageColors[item?.stage]
-                  }
-                >
-                  {item?.stage}
-                </small>
-                <br />
-                {((dayjs().isBefore(dayjs(item?.kickoff_date)) &&
-                  ["INACTIVE", "PREWORK"].includes(item?.stage)) ||
-                  (dayjs().isAfter(dayjs(item?.ending_date)) &&
-                    !["ENDED", "DELETED"].includes(item?.stage))) && (
-                  <small className='text-warning pb-2px'>
-                    <Icon>error</Icon>Out of sync
-                  </small>
-                )}
-              </div>
-            </div>
-          );
-        },
-      },
-    },
-    {
-      name: "slug", // field name in the row object
-      label: "Slug", // column title that will be shown in table
-      options: {
-        filter: true,
-        filterList: query.get("slug") !== null ? [query.get("slug")] : [],
-        customBodyRenderLite: (i) => {
-          let item = items[i];
-          return (
-            <div className='flex items-center'>
-              <div className='ml-3'>
-                <h5 className='my-0 text-15'>{item?.name}</h5>
-                <small className='text-muted'>{item?.slug}</small>
-              </div>
-            </div>
-          );
-        },
-      },
-    },
-    {
-      name: "kickoff_date",
-      label: "Kickoff Date",
-      options: {
-        filter: true,
-        filterList:
-          query.get("kickoff_date") !== null ? [query.get("kickoff_date")] : [],
-        customBodyRenderLite: (i) => (
-          <div className='flex items-center'>
-            <div className='ml-3'>
-              <h5 className='my-0 text-15'>
-                {dayjs(items[i].kickoff_date).format("MM-DD-YYYY")}
-              </h5>
-              <small className='text-muted'>
-                {dayjs(items[i].kickoff_date).fromNow()}
-              </small>
-            </div>
-          </div>
-        ),
-      },
-    },
-    {
-      name: "certificate",
-      label: "Certificate",
-      options: {
-        filter: true,
-        filterList:
-          query.get("certificate") !== null ? [query.get("certificate")] : [],
-        customBodyRenderLite: (i) => items[i].certificate?.name,
-      },
-    },
-    {
-      name: "action",
-      label: " ",
-      options: {
-        filter: false,
-        customBodyRenderLite: (dataIndex) => (
-          <div className='flex items-center'>
-            <div className='flex-grow'></div>
-            <Link to={"/admissions/cohorts/" + items[dataIndex].slug}>
-              <IconButton>
-                <Icon>edit</Icon>
-              </IconButton>
-            </Link>
-            <Link to='/pages/view-customer'>
-              <IconButton>
-                <Icon>arrow_right_alt</Icon>
-              </IconButton>
-            </Link>
-          </div>
-        ),
-      },
-    },
-  ];
 
   return (
     <div className='m-sm-30'>
@@ -198,10 +40,16 @@ const Cohorts = () => {
           {isLoading && <MatxLoading />}
           <SmartMUIDataTable 
             title="All Cohorts"
-            data={items}
-            columns={columns}
             url="/admissions/academy/cohort"
-            historyReplace="/admissions/cohorts"
+            queryUrl="/admissions/cohorts"
+            firstColumnName="stage"
+            firstColumnLabel="Stage"
+            secondColumnName="slug"
+            secondColumnLabel="Slug"
+            thirdColumnName="kickoff_date"
+            thirdColumnLabel="Kickoff Date"
+            fourthColumnName="certificate"
+            fourtyhColumnLabel="Certificate"
           />
         </div>
       </div>

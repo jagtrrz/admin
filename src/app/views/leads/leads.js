@@ -234,6 +234,7 @@ const Leads = () => {
               rowsPerPage: querys.limit === undefined ? 10 : parseInt(querys.limit),
               rowsPerPageOptions: [10, 20, 40, 80, 100],
               onTableChange: (action, tableState) => {
+                console.log(action, tableState);
                 switch (action) {
                   case "changePage":
                     console.log(tableState.page, tableState.rowsPerPage);
