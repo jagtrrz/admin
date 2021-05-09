@@ -392,8 +392,6 @@ export const SmartMUIDataTable = (props) => {
 
 SmartMUIDataTable.propTypes = {
     title: PropTypes.string,
-    data: PropTypes.any,
-    columns: PropTypes.any,
     url: PropTypes.string,
     queryUrl: PropTypes.string,
     firstColumnName: PropTypes.string,
