@@ -46,7 +46,7 @@ const Students = () => {
             thirdColumnName="status"
             thirdColumnLabel="Status"
             fourthColumnName=""
-            fourtyhColumnLabel=""
+            fourthColumnLabel=""
           />
         </div>
       </div>

@@ -49,7 +49,7 @@ const Cohorts = () => {
             thirdColumnName="kickoff_date"
             thirdColumnLabel="Kickoff Date"
             fourthColumnName="certificate"
-            fourtyhColumnLabel="Certificate"
+            fourthColumnLabel="Certificate"
           />
         </div>
       </div>
