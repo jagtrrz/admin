@@ -20,11 +20,7 @@ import dayjs from "dayjs";
 import { MatxLoading } from "matx";
 
 import bc from "../../services/breathecode";
-import CustomToolbarSelect from "app/components/CustomToolbar";
 import CustomToolbarSelectCertificates from "app/components/CertificateCustomToolbar";
-
-import ResponseDialog from "./ResponseDialog";
-
 
 var relativeTime = require("dayjs/plugin/relativeTime");
 dayjs.extend(relativeTime);
@@ -348,12 +344,6 @@ const Certificates = () => {
                       id={"certificates"}
                       // missing re-render function as other view has
                     />
-                    {/* <CustomToolbarSelectCertificates 
-                      selectedRows={selectedRows}
-                      displayData={displayData}
-                      setSelectedRows={setSelectedRows}
-                      items={items}
-                    /> */}
                   </>
                 )
               },
@@ -381,8 +371,14 @@ const Certificates = () => {
                     items={items}
                     key={items}
                     history={history}
-                    id={"certificates"}
-                    reRender={handleLoadingData}
+                    customToolbarByPage={
+                      <CustomToolbarSelectCertificates 
+                        selectedRows={selectedRows}
+                        displayData={displayData}
+                        setSelectedRows={setSelectedRows}
+                        items={items}
+                      />
+                    }
                   />
                 );
               },

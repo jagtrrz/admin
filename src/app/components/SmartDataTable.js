@@ -153,7 +153,7 @@ export const SmartMUIDataTable = (props) => {
               items={props.data}
               key={props.data}
               history={history}
-              id={"students"}
+              customToolbarByPage={props.customToolbarByPage}
               // missing re-render function as other view has
             />
           );
@@ -226,4 +226,5 @@ SmartMUIDataTable.propTypes = {
   data: PropTypes.any,
   columns: PropTypes.any,
   search: PropTypes.any,
+  customToolbarByPage: PropTypes.any
 };

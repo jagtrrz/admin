@@ -7,6 +7,7 @@ import dayjs from "dayjs";
 import bc from "app/services/breathecode";
 import { toast } from "react-toastify";
 import { SmartMUIDataTable } from "app/components/SmartDataTable";
+import CustomToolbarSelectCertificates from "app/components/CertificateCustomToolbar";
 
 let relativeTime = require("dayjs/plugin/relativeTime");
 dayjs.extend(relativeTime);
@@ -200,6 +201,9 @@ const Students = () => {
               setItems(data.results);
               return data;
             }}
+            customToolbarByPage={
+              <CustomToolbarSelectCertificates />
+            }
           />
         </div>
       </div>
